@@ -1,9 +1,10 @@
 ---
 order: 1
+pcx-content-type: navigation
 ---
 
 # Connect networks
 
-You can configure networks to send DNS queries to Cloudflare for filtering and logging.
+Cloudflare for Teams can secure the networks that connect out to the Internet as well as the networks that your team needs to reach over a secure connection.
 
 <DirectoryListing path="connections/connect-networks"/>

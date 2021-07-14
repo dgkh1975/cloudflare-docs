@@ -20,8 +20,9 @@ module.exports = {
     },
   ],
   search: {
-    indexName: '',
-    apiKey: ''
+    indexName: "developers-cloudflare",
+    apiKey: "b23088ab4d346409f9d3ece6606344c3",
+    algoliaOptions: { 'facetFilters': '["project:pages"]'}
   },
   siteMetadata: {
     title: 'Cloudflare Pages docs',
@@ -30,6 +31,6 @@ module.exports = {
     author: '@cloudflare',
     url: 'http://developers.cloudflare.com/pages',
     image:
-      'https://repository-images.githubusercontent.com/253644261/3c9cd080-e25c-11ea-9db6-57a083cfdb49',
+      'https://www.cloudflare.com/img/cf-twitter-card.png',
   },
 }

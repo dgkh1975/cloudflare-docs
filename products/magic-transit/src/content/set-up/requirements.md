@@ -3,6 +3,7 @@ title: Requirements
 alwaysopen: true
 order: 1
 hidden: false
+pcx-content-type: tutorial
 ---
 
 # Requirements
@@ -19,7 +20,7 @@ Magic Transit relies on Generic Routing Encapsulation (GRE) tunnels to transmit 
 
 ## Draft Letter of Authorization
 
-Draft a [Letter of Authorization (LOA)](https://developers.cloudflare.com/byoip/loa) that identifies the prefixes you want to advertise and gives Cloudflare permission to announce them. See this [LOA template](https://developers.cloudflare.com/byoip/loa/loa-template) for an example.
+Draft a [Letter of Authorization (LOA)](https://developers.cloudflare.com/byoip/loa) that identifies the prefixes you want to advertise and gives Cloudflare permission to announce them. The LOA is required by Cloudflare's transit providers so they can accept the routes Cloudflare advertises on your behalf. See this [LOA template](https://developers.cloudflare.com/byoip/loa/loa-template) for an example.
 
 ## Verify Internet Routing Registry entries
 
@@ -84,7 +85,6 @@ The following table lists several commonly used router vendors with links to MSS
 | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Cisco         | [TC IP Adjust MSS](https://www.cisco.com/en/US/docs/ios-xml/ios/ipapp/command/ip_tcp_adjust-mss_through_ip_wccp_web-cache_accelerated.html#GUID-68044D35-A53E-42C1-A7AB-9236333DA8C4)                 |
 | Juniper       | [TCP MSS – Edit System](https://www.juniper.net/documentation/en_US/junos/topics/reference/configuration-statement/tcp-mss-edit-system.html)                                                          |
-| Oracle        | [TCP MSS adjustment](https://docs.cloud.oracle.com/en-us/iaas/Content/Network/Reference/ciscoasaCPEpolicybased.htm#:~:text=You%20can%20configure%20the%20Cisco,value%20to%20the%20configured%20value) |
 
 ### Verify MSS settings at your origin
 

@@ -3,7 +3,6 @@ order: 1000
 type: example
 summary: Redirect a response based on the country code in the header of a visitor.
 tags:
-  - Security
   - Originless
 ---
 
@@ -19,8 +18,9 @@ tags:
  * @param {Request} request
  */
 async function redirect(request) {
-  // The `cf-ipcountry` header is not supported in the preview
-  const country = request.headers.get("cf-ipcountry")
+  // Use the cf object to obtain the country of the request
+  // more on the cf object: https://developers.cloudflare.com/workers/runtime-apis/request#incomingrequestcfproperties
+  const country = request.cf.country
 
   if (country != null && country in countryMap) {
     const url = countryMap[country]
@@ -37,7 +37,7 @@ async function redirect(request) {
  */
 const countryMap = {
   US: "https://example.com/us",
-  EU: "https://eu.example.com/",
+  DE: "https://de.example.com/",
 }
 
 async function handleRequest(request) {

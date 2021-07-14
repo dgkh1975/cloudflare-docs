@@ -19,14 +19,15 @@ module.exports = {
     }
   ],
   search: {
-    indexName: "cloudflare-access",
-    apiKey: "b3c13d590b79cf5f74f8ebc0d58fe73a"
+    indexName: "developers-cloudflare",
+    apiKey: "b23088ab4d346409f9d3ece6606344c3",
+    algoliaOptions: { 'facetFilters': '["project:access"]'}
   },
   siteMetadata: {
     title: "Cloudflare Access docs",
     description: "Welcome to Cloudflare Access. You can now make all your applications available on the internet without a VPN. Access protects these applications and allows only authorized users to access them. For example, Cloudflare uses Access to ensure only people at Cloudflare can access internal tools like our staging site.",
     author: "@cloudflare",
     url: "https://developers.cloudflare.com/access",
-    image: "data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII="
+    image: "https://www.cloudflare.com/img/cf-twitter-card.png"
   }
 }

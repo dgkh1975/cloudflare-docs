@@ -1,3 +1,7 @@
+---
+pcx-content-type: configuration
+---
+
 # HTMLRewriter
 
 ## Background
@@ -91,6 +95,26 @@ class DocumentHandler {
 }
 ```
 
+#### Async Handlers
+
+All functions defined on both Element and Document handlers can return either `void` or a `Promise<void>`. Making your handler function `async` allows you to access external resources such as an API via fetch, Workers KV, Durable Objects, or the cache.
+
+```js
+class UserElementHandler {
+  async element(element) {
+    let response = await fetch(new Request("/user"));
+    
+    // fill in user info using response
+  }
+}
+
+async function handleRequest(req) {
+  const res = await fetch(req)
+
+  return new HTMLRewriter().on("div:user_info", new UserElementHandler()).transform(res)
+}
+```
+
 ### Element
 
 The `element` argument, used only in element handlers, is a representation of a DOM element. A number of methods exist on an element to query and manipulate it:
@@ -157,11 +181,11 @@ The `element` argument, used only in element handlers, is a representation of a 
 
   - Replaces content of the element.
 
-- <Code>remove(content<ParamType>Content</ParamType>, contentOptions<ParamType>ContentOptions</ParamType><PropMeta>optional</PropMeta>)</Code> <Type>Element</Type>
+- <Code>remove()</Code> <Type>Element</Type>
 
   - Removes the element with all its content.
 
-- <Code>removeAndKeepContent(content<ParamType>Content</ParamType>, contentOptions<ParamType>ContentOptions</ParamType><PropMeta>optional</PropMeta>)</Code> <Type>Element</Type>
+- <Code>removeAndKeepContent()</Code> <Type>Element</Type>
 
   - Removes the start tag and end tag of the element, but keeps its inner content intact.
 
@@ -410,3 +434,4 @@ async function handle(request) {
 
 - [Introducing `HTMLRewriter`](https://blog.cloudflare.com/introducing-htmlrewriter/)
 - [Tutorial: Localize a Website](/tutorials/localize-a-website)
+- [Example: rewrite links](/examples/rewrite-links)

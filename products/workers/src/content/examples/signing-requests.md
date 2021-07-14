@@ -4,10 +4,10 @@ type: example
 summary: Sign and verify a request using the HMAC and SHA-256 algorithms or return a 403.
 tags:
   - Security
-  - Originless
+  - WebCrypto
 ---
 
-# Signing requests
+# Sign requests
 
 <ContentColumn>
   <p>{props.frontmatter.summary}</p>

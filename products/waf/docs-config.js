@@ -15,14 +15,15 @@ module.exports = {
     }
   ],
   search: {
-    indexName: "",
-    apiKey: "",
+    indexName: "developers-cloudflare",
+    apiKey: "b23088ab4d346409f9d3ece6606344c3",
+    algoliaOptions: { 'facetFilters': '["project:waf"]'}
   },
   siteMetadata: {
     title: "Cloudflare Web Application Firewall (WAF) docs",
     description: "Protect against web application vulnerabilities with Cloudflare’s Web Application Firewall (WAF).",
     author: "@cloudflare",
     url: "https://developers.cloudflare.com/waf",
-    image: "data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII="
+    image: "https://www.cloudflare.com/img/cf-twitter-card.png"
   }
 }

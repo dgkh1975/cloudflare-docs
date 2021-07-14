@@ -1,7 +1,8 @@
 ---
-updated: 2020-11-28
+updated: 2021-03-09
 category: 🛡️ Web Gateway
 difficulty: Advanced
+pcx-content-type: tutorial
 ---
 
 # Block file uploads to Google Drive
@@ -14,101 +15,120 @@ You can use Cloudflare Gateway and the Cloudflare WARP client application to pre
 * Enroll devices into a Cloudflare for Teams account where this rule will be enforced
 * Log file type upload attempts
 
-**⏲️Time to complete: ~45 minutes**
+**⏲️ Time to complete:**
 
-## Configure Cloudflare Gateway
-
-Before you begin, you'll need to follow [these instructions](https://developers.cloudflare.com/gateway/getting-started/onboarding-gateway) to set up Cloudflare Gateway in your account. To perform file type control, you will need one of the following subscriptions:
-
-* Teams Standard
-* Gateway
-
-## Determine which devices can enroll
-
-To block file types from corporate devices, those devices must run the Cloudflare WARP client and [be enrolled in your Teams account](https://developers.cloudflare.com/gateway/connecting-to-gateway). When devices enroll, users will be prompted to authenticate with your identity provider or a consumer identity service. You can also deploy via MDM.
-
-First, you will need to determine which devices can enroll. To begin, you will need to enable Cloudflare Access for your account. Cloudflare Access provides the identity integration to enroll users. This feature of Cloudflare Access is available in the Teams Free plan or in the Gateway plan at no additional cost. Follow [these instructions](https://developers.cloudflare.com/access/getting-started/access-setup) to add Access and integrate a free identity option or a specific provider.
-
-Next, build a rule to decide which devices can enroll into your Gateway account. Navigate to the `Devices` page in the `My Teams` section of the sidebar.
-
-![Device List](../static/secure-web-gateway/secure-dns-devices/device-page.png)
-
-Click `Device Settings` to build the enrollment rule. In the policy, define who should be allowed to enroll a device and click `Save`.
-
-![Enroll Rule](../static/secure-web-gateway/secure-dns-devices/enroll-rule.png)
-
-## Enroll a device
-
-You can use the WARP client to enroll a device into your security policies. Follow the [instructions here](https://developers.cloudflare.com/warp-client/setting-up) to install the client depending on your device type. Cloudflare Gateway does not need a special version of the client.
-
-Once installed, click the gear icon.
-
-![WARP](../static/secure-web-gateway/secure-dns-devices/warp.png)
-
-Under the `Account` tab, click `Login with Cloudflare for Teams`.
-
-![Account View](../static/secure-web-gateway/secure-dns-devices/account-view.png)
-
-Input your Cloudflare for Teams org name. You will have created this during the Cloudflare Access setup flow. You can find it under the `Authentication` tab in the `Access` section of the sidebar.
-
-![Org Name](../static/secure-web-gateway/secure-dns-devices/org-name.png)
-
-The user will be prompted to login with the identity provider configured in Cloudflare Access. Once authenticated, the client will update to `Teams` mode. You can click the gear to toggle between DNS filtering or full proxy. In this use case, you must toggle to `Gateway with WARP`.
-
-![Confirm WARP](../static/secure-web-gateway/block-uploads/with-warp.png)
-
-## Configure the Cloudflare certificate
-
-To inspect traffic, Cloudflare Gateway requires that a [certificate be installed](https://developers.cloudflare.com/gateway/connecting-to-gateway/install-cloudflare-cert) on enrolled devices. You can also distribute this certificate through an MDM provider. The example below follows a manual distribution flow.
-
-Download the Cloudflare certificate provided in the [instructions here](https://developers.cloudflare.com/gateway/connecting-to-gateway/install-cloudflare-cert). You can also find the certificate in the Cloudflare for Teams dashboard. Navigate to the `Account` page in the `Settings` section of the sidebar and scroll to the bottom.
-
-Next, follow [these instructions](https://developers.cloudflare.com/gateway/connecting-to-gateway/install-cloudflare-cert) to install the certificate on your system.
-
-Once the certificate has been installed, you can configure Gateway to inspect HTTP traffic. To do so, navigate to the `Policies` page in the Gateway section. Click the **Settings** tab and toggle `Proxy Settings` to enabled.
-
-![Add Policy](../static/secure-web-gateway/block-uploads/filter-toggle.png)
+10 minutes
 
 ## Create a Gateway HTTP policy
 
-Next, you can [build a policy](https://developers.cloudflare.com/gateway/getting-started/configuring-http-policy) that will block file uploads to Google Drive. Navigate to the `Policies` page. On the HTTP tab, click `Add a policy`.
+You can [build a policy](/policies/filtering/http-policies) that will block file uploads to Google Drive. Navigate to the `Policies` page. On the HTTP tab, click `Create a policy`.
 
-![Add Policy](../static/secure-web-gateway/block-uploads/add-policy.png)
+![Add Policy](../static/secure-web-gateway/block-uploads/add-http-policy.png)
 
-Uploading files to Google Drive consists of `POST` and `PUT` methods made to `clients6.google.com`. To block Google Drive uploads, block these methods to that host.
+Name the policy and provide an optional description.
 
-In the rule builder, add `Host is drive.google.com` and a second rule where `HTTP Method is POST`. Choose the Block action. Click `Save`.
+![Add Policy](../static/secure-web-gateway/block-uploads/name-policy.png)
 
-![Block POST](../static/secure-web-gateway/block-uploads/block-post.png)
+Cloudflare curates a constantly-updating list of the hostnames, URLs, and endpoints used by common applications. In this example, "Google Drive" list containst the destinations used by Google Drive.
 
-Add a second policy, replacing `POST` with `PUT`.
+In the rule builder, select "Application" in the **Selector** field, "in" in the **Operator** field, and under "File Sharing" select "Google Drive" in the **Value** field.
 
-![Block PUT](../static/secure-web-gateway/block-uploads/block-put.png)
+![Select Drive](../static/secure-web-gateway/block-uploads/select-google-drive.png)
 
-You should now see both policies in the `Policies` view.
+Next, click **+ Add Condition** and choose "Upload Mime Type" and "matches regex". Under value, input `.*` - this will match against files of any type being uploaded.
 
-![All Policies](../static/secure-web-gateway/block-uploads/all-policies.png)
+![Block Drive](../static/secure-web-gateway/block-uploads/upload-mime-type.png)
 
-<Aside>
+Scroll to **Action** and choose "Block". Click **Create rule** to save the rule.
 
-Alternatively, you can block all POST and PUT methods to `google.com` subdomains in the event that the `clients6` subdomain changes. However, this may block other Google functionality.
+![Block Drive](../static/secure-web-gateway/block-uploads/block-action.png)
 
-</Aside>
+## Exempt some users
+
+You can allow certain users to upload to Google Drive, while blocking all others, by adding a second policy and modifying the order of rule operations in Gateway.
+
+Create a new policy and include the first two values from the previous policy. Add a third condition and input the value of user identity that should be allowed to upload. This example uses the name of a group from an integrated identity provider.
+
+![Allow Drive](../static/secure-web-gateway/block-uploads/allow-users.png)
+
+Select `Allow` for the action and save the rule.
+
+![Allow Drive](../static/secure-web-gateway/block-uploads/allow-action.png)
+
+Next, modify the existing rule order.
+
+![Rule List](../static/secure-web-gateway/block-uploads/allow-last.png)
+
+Drag the `Allow` rule higher than the `Block` rule.
+
+![Rule List](../static/secure-web-gateway/block-uploads/allow-first.png)
+
+## Integrate your identity provider
+
+The HTTP filtering policy created will apply to any HTTP requests sent from configured locations or enrolled devices. You can begin to [enroll devices](/connections/connect-devices/warp/deployment) by determining which users are allowed to enroll.
+
+Navigate to the `Settings` section of the Cloudflare for Teams dashboard and select `Authentication`. Cloudflare for Teams will automatically create a "One-time PIN" option which will rely on your user's emails. You can begin using the one-time PIN option immediately or you can also integrate your corporate [identity provider](/identity/idp-integration).
+
+## Determine which devices can enroll
+
+Next, build a rule to decide which devices can enroll in your account. 
+
+1. Navigate to **Settings > Devices > Device enrollment**.
+
+    ![Device settings](../static/secure-web-gateway/block-football/device-enrollment-settings.png)
+
+1. Click **Manage**.
+
+1. Click **Add a rule**.
+
+    ![Device Enrollment](../static/secure-web-gateway/block-football/device-enrollment-add-rule.png)
+
+    Determine who is allowed to enroll by using criteria including Access groups, groups from your identity provider, email domain, or named users. This example allows any user with a `@cloudflare.com` account to enroll.
+
+    ![Allow Cloudflare users](../static/secure-web-gateway/block-football/allow-cf-users.png)
+
+1. Click **Save**.
+
+Your rule will now be visible under the **Device enrollment rules** list.
+
+## Configure the Cloudflare certificate
+
+To inspect traffic, Cloudflare Gateway requires that a [certificate be installed](/connections/connect-devices/warp/install-cloudflare-cert) on enrolled devices. You can also distribute this certificate through an MDM provider. The example below describes the manual distribution flow.
+
+To download the Cloudflare certificate:
+* Follow the link provided in [these instructions](/connections/connect-devices/warp/install-cloudflare-cert).
+* Find the certificate in the Teams Dashboard, by navigating to **Settings > Devices > Certificates**.
+
+## Enable the Cloudflare proxy
+
+Once the certificate has been installed, you can configure Gateway to inspect HTTP traffic. To do so, navigate to **Settings > Network**. Toggle **Proxy** to *Enabled*. This will tell Cloudflare to begin proxying any traffic from enrolled devices, except the traffic excluded using the [split tunnel](/connections/connect-devices/warp/exclude-traffic) settings.
+
+Next, enable TLS decryption. This will tell Cloudflare to begin decrypting traffic for inspection from enrolled devices, except the traffic excluded from inspection.
+
+![Policy settings](../static/secure-web-gateway/block-football/enable-proxy-decrypt.png)
+
+## Enroll a device
+
+1. Follow the [instructions](/connections/connect-devices/warp/deployment) to install the WARP client depending on your device type. Cloudflare Gateway does not need a special version of the client.
+
+1. Once the client is installed, click the gear icon.
+
+    ![WARP](../static/secure-web-gateway/secure-dns-devices/warp.png)
+
+1. Under the **Account** tab, click **Login with Cloudflare for Teams**.
+
+    ![Account View](../static/secure-web-gateway/secure-dns-devices/account-view.png)
+
+1. Input your [team name](/glossary#team-name). You can find it on the Teams Dashboard under **Settings > General**.
+
+    ![Team Name](../static/secure-web-gateway/secure-dns-devices/org-name.png)
+
+The user will be prompted to login with the identity provider configured in Cloudflare Access. Once authenticated, the client will update to `Teams` mode. You can click the gear to toggle between DNS filtering or full proxy. In this use case, you must toggle to `Gateway with WARP`. These settings can be configured globally for an organization through a device management platform.
+
+![Confirm WARP](../static/secure-web-gateway/block-football/warp-mode.png)
 
 ## Test policy
 
 You can test the policy by attempting to upload a file to Google Drive. Google Drive should return an error message when blocked.
 
 ![Block Action](../static/secure-web-gateway/block-uploads/block-result.png)
-
-## View Logs
-
-Once enabled, if a user attempts to upload a file you can view logs of the block.
-
-Navigate to the `Logs` section of the sidebar and choose `Gateway`. Open the Filter action and select `Block` from the dropdown under `Decision`.
-
-![Block Action](../static/secure-web-gateway/block-uploads/block-logs.png)
-
-## Optional: Deploy via MDM
-
-You can deploy the WARP client on corporate devices in a way that does not require users to configure the Org Name. To do so, [follow these instructions](https://developers.cloudflare.com/warp-client/teams).
